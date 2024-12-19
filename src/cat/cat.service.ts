@@ -1,0 +1,16 @@
+import { Injectable } from '@nestjs/common';
+import { Cat } from './interfaces/cat.interface';
+import { ListAllEntities } from './dto';
+
+@Injectable()
+export class CatService {
+  private readonly cats: Cat[] = [];
+
+  create(cat: Cat) {
+    this.cats.push(cat);
+  }
+
+  findAll(query: ListAllEntities): Cat[] {
+    return this.cats.slice(0, query.limit);
+  }
+}
