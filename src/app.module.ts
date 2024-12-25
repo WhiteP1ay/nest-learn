@@ -5,7 +5,7 @@ import { CatModule } from './cat/cat.module';
 import { LoggerMiddleWare } from './logger.middleware';
 import { UserModule } from './user/user.module';
 import { TodoModule } from './todo/todo.module';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as Joi from 'joi';
 @Module({
@@ -17,21 +17,26 @@ import * as Joi from 'joi';
       isGlobal: true,
       envFilePath: ['.env', `.${process.env.NODE_ENV}.env`],
       validationSchema: Joi.object({
+        DB_DATABASE: Joi.string().required(),
         DB_USER: Joi.string().required(),
         DB_PASSWORD: Joi.string().required(),
-        DB_URL: Joi.string().ip().required(),
+        DB_HOST: Joi.string().ip().required(),
         DB_PORT: Joi.number().required(),
       }),
     }),
-    TypeOrmModule.forRoot({
-      type: 'mysql',
-      host: process.env.DB_URL,
-      port: parseInt(process.env.DB_PORT),
-      username: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-      database: 'test',
-      entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      synchronize: true,
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        type: 'mysql',
+        host: configService.get('DB_HOST'),
+        port: parseInt(configService.get('DB_PORT')),
+        username: configService.get('DB_USER'),
+        password: configService.get('DB_PASSWORD'),
+        database: configService.get('DB_DATABASE'),
+        entities: [__dirname + '/**/*.entity{.ts,.js}'],
+        synchronize: true,
+      }),
     }),
   ],
   controllers: [AppController],
