@@ -7,6 +7,9 @@ import { UserModule } from './user/user.module';
 import { TodoModule } from './todo/todo.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ProfileModule } from './profile/profile.module';
+import { LogModule } from './log/log.module';
+import { RoleModule } from './role/role.module';
 import * as Joi from 'joi';
 @Module({
   imports: [
@@ -38,6 +41,9 @@ import * as Joi from 'joi';
         synchronize: true,
       }),
     }),
+    ProfileModule,
+    LogModule,
+    RoleModule,
   ],
   controllers: [AppController],
   providers: [AppService],
