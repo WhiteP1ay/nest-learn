@@ -19,6 +19,8 @@ async function bootstrap() {
     type: VersioningType.URI,
   });
 
+  app.setGlobalPrefix('api');
+
   // app.useGlobalInterceptors(new TransformInterceptor());
 
   await app.listen(3000);
