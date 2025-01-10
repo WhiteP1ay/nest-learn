@@ -24,6 +24,12 @@ export class RoleService {
     return this.roleRepository.findOne({ where: { id } });
   }
 
+  findByUser(userId: number) {
+    return this.roleRepository.find({
+      where: { users: { id: userId } },
+    });
+  }
+
   update(id: number, updateRoleDto: UpdateRoleDto) {
     return this.roleRepository.update(id, updateRoleDto);
   }
