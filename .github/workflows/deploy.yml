@@ -18,7 +18,7 @@ jobs:
       with:
         host: ${{ secrets.ALIYUN_HOST }}
         username: ${{ secrets.ALIYUN_USERNAME }}
-        key: ${{ secrets.ALIYUN_PASSWORD }}
+        key: ${{ secrets.ALIYUN_SSH }}
         script: |
           cd /home/${{ secrets.ALIYUN_USERNAME }}/nest-app
           git pull origin deploy
