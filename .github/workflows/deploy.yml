@@ -69,7 +69,10 @@ jobs:
           IMAGE_TAG=${{ github.sha }}
           EOL
 
-          # 停止并删除容器，但保留数据卷
+          # 停止所有容器但保留数据卷
+          docker compose stop || true
+          # 确保所有容器都被删除（即使 docker compose down 失败）
+          docker rm -f nest_api my_mysql my_adminer || true
           docker compose down || true
 
           # 拉取最新镜像并重启服务
