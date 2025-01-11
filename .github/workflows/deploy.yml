@@ -20,7 +20,16 @@ jobs:
         username: ${{ secrets.ALIYUN_USERNAME }}
         key: ${{ secrets.ALIYUN_SSH }}
         script: |
+          # 如果目录不存在就创建
+          mkdir -p /home/${{ secrets.ALIYUN_USERNAME }}/nest-app
           cd /home/${{ secrets.ALIYUN_USERNAME }}/nest-app
+      
+          # 如果不是 git 仓库就克隆
+          if [ ! -d .git ]; then
+            git clone git@github.com:WhiteP1ay/nest-learn.git
+          fi
+      
+          git checkout deploy
           git pull origin deploy
           docker compose down
           docker compose up -d --build 
