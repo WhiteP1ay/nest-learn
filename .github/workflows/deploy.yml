@@ -69,9 +69,11 @@ jobs:
           IMAGE_TAG=${{ github.sha }}
           EOL
 
+          # 停止并删除容器，但保留数据卷
+          docker compose down || true
+
           # 拉取最新镜像并重启服务
           docker compose pull
-          docker compose down --remove-orphans
           docker compose up -d
 
           # 检查服务是否正常启动
