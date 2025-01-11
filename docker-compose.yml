@@ -1,15 +1,8 @@
 services:
   # NestJS 应用服务
   api:
-    image: node:20-alpine
+    image: ${DOCKERHUB_USERNAME}/nest-app:latest
     container_name: nest_api
-    working_dir: /app
-    volumes:
-      - .:/app
-    command: >
-      sh -c "yarn install &&
-             yarn build &&
-             yarn start:prod"
     ports:
       - "3000:3000"
     env_file:
