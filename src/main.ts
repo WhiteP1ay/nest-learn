@@ -23,7 +23,7 @@ async function bootstrap() {
 
   // app.useGlobalInterceptors(new TransformInterceptor());
 
-  await app.listen(3000);
+  await app.listen(3000, '0.0.0.0');
 }
 console.log('NODE_ENV', process.env.NODE_ENV);
 bootstrap();
