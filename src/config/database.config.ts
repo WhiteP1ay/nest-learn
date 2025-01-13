@@ -19,7 +19,7 @@ export const databaseConfig: TypeOrmModuleAsyncOptions = {
 
 export const configModuleOptions = {
   isGlobal: true,
-  envFilePath: ['.env', `.${process.env.NODE_ENV}.env`],
+  envFilePath: ['.env'],
   validationSchema: Joi.object({
     DB_DATABASE: Joi.string().required(),
     DB_USER: Joi.string().required(),
