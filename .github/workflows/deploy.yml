@@ -40,8 +40,9 @@ jobs:
           # 进入项目目录
           cd /home/${{ secrets.ALIYUN_USERNAME }}/nest-app
           
-          # 停止现有的数据库服务
-          docker compose down || true
+          # 强制停止并删除所有相关容器
+          docker compose down --remove-orphans || true
+          docker rm -f my_mysql my_adminer || true
           
           # 清理旧的构建文件
           rm -rf dist
