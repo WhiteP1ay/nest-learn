@@ -36,16 +36,14 @@ jobs:
         script: |
           # 确保目录存在
           mkdir -p /home/${{ secrets.ALIYUN_USERNAME }}/nest-app
-          
-          # 进入项目目录
           cd /home/${{ secrets.ALIYUN_USERNAME }}/nest-app
           
           # 强制停止并删除所有相关容器
           docker compose down --remove-orphans || true
           docker rm -f my_mysql my_adminer || true
           
-          # 清理旧的构建文件
-          rm -rf dist
+          # 清理整个目录
+          rm -rf ./* ./.*
 
     # 将构建产物传输到服务器
     - name: Copy build artifacts
@@ -54,7 +52,7 @@ jobs:
         host: ${{ secrets.ALIYUN_HOST }}
         username: ${{ secrets.ALIYUN_USERNAME }}
         key: ${{ secrets.ALIYUN_SSH }}
-        source: "dist/,.dev.env,docker-compose.yml"
+        source: "dist/**,docker-compose.yml,.dev.env"
         target: "/home/${{ secrets.ALIYUN_USERNAME }}/nest-app"
         strip_components: 0
 
