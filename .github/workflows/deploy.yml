@@ -71,3 +71,4 @@ jobs:
             docker compose down || true
             docker rm -f my_mysql my_adminer || true
             docker compose up -d
+            yarn start:prod
