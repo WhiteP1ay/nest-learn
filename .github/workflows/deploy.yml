@@ -25,6 +25,7 @@ jobs:
       run: |
         yarn install
         yarn build
+        ls
     
     # 部署到服务器
     - name: Deploy to Aliyun ECS
