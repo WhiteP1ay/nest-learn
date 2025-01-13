@@ -26,25 +26,6 @@ jobs:
         yarn install
         yarn build
     
-    # 登录到 Docker Hub
-    - name: Login to Docker Hub
-      uses: docker/login-action@v2
-      with:
-        username: ${{ secrets.DOCKER_ACCOUNT }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
-    
-    # 构建并推送 nest-app 镜像
-    - name: Build and push Docker image
-      uses: docker/build-push-action@v4
-      with:
-        context: .
-        push: true
-        tags: |
-          ${{ secrets.DOCKER_ACCOUNT }}/nest-app:latest
-          ${{ secrets.DOCKER_ACCOUNT }}/nest-app:${{ github.sha }}
-        cache-from: type=registry,ref=${{ secrets.DOCKER_ACCOUNT }}/nest-app:latest
-        cache-to: type=inline
-    
     # 部署到服务器
     - name: Deploy to Aliyun ECS
       uses: appleboy/ssh-action@master
@@ -55,39 +36,35 @@ jobs:
         script: |
           # 确保目录存在
           mkdir -p /home/${{ secrets.ALIYUN_USERNAME }}/nest-app
-
+          
           # 进入项目目录
           cd /home/${{ secrets.ALIYUN_USERNAME }}/nest-app
-
-          # 下载最新的配置文件
-          wget -O docker-compose.yml https://raw.githubusercontent.com/${{ github.repository }}/main/docker-compose.yml || true
-          wget -O .dev.env https://raw.githubusercontent.com/${{ github.repository }}/main/.dev.env || true
-
-          # 设置 Docker 相关环境变量
-          cat > .env << EOL
-          DOCKERHUB_USERNAME=${{ secrets.DOCKER_ACCOUNT }}
-          IMAGE_TAG=${{ github.sha }}
-          EOL
-
-          # 停止所有容器但保留数据卷
-          docker compose stop || true
-          # 确保所有容器都被删除（即使 docker compose down 失败）
-          docker rm -f nest_api my_mysql my_adminer || true
+          
+          # 停止现有的数据库服务
           docker compose down || true
+          
+          # 清理旧的构建文件
+          rm -rf dist
 
-          # 拉取最新镜像并重启服务
-          docker compose pull
+    # 将构建产物传输到服务器
+    - name: Copy build artifacts
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ secrets.ALIYUN_HOST }}
+        username: ${{ secrets.ALIYUN_USERNAME }}
+        key: ${{ secrets.ALIYUN_SSH }}
+        source: "dist/,.dev.env,docker-compose.yml"
+        target: "/home/${{ secrets.ALIYUN_USERNAME }}/nest-app"
+        strip_components: 0
+
+    # 重启数据库服务
+    - name: Restart Database Services
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.ALIYUN_HOST }}
+        username: ${{ secrets.ALIYUN_USERNAME }}
+        key: ${{ secrets.ALIYUN_SSH }}
+        script: |
+          cd /home/${{ secrets.ALIYUN_USERNAME }}/nest-app
           docker compose up -d
-
-          # 检查服务是否正常启动
-          sleep 10
-          if ! docker compose ps | grep -q "Up"; then
-            echo "Deployment failed, rolling back..."
-            export IMAGE_TAG=latest
-            docker compose up -d
-            exit 1
-          fi
-
-          # 清理旧的镜像
-          docker image prune -f
     
