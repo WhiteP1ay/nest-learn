@@ -44,9 +44,8 @@ jobs:
         host: ${{ secrets.ALIYUN_HOST }}
         username: ${{ secrets.ALIYUN_USERNAME }}
         key: ${{ secrets.ALIYUN_SSH }}
-        source: "dist/**,docker-compose.yml,.dev.env"
+        source: "dist/,docker-compose.yml,.dev.env"
         target: "/home/${{ secrets.ALIYUN_USERNAME }}/nest-app"
-        strip_components: 0
 
     # 重启数据库服务
     - name: Restart Database Services
