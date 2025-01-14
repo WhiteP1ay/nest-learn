@@ -25,7 +25,6 @@ jobs:
         run: |
           yarn install
           yarn build
-          ls
 
       # 部署到服务器
       - name: Deploy to Aliyun ECS
@@ -35,8 +34,8 @@ jobs:
           username: ${{ secrets.ALIYUN_USERNAME }}
           key: ${{ secrets.ALIYUN_SSH }}
           script: |
-            rm -rf /home/${{ secrets.ALIYUN_USERNAME }}/nest-app
-            mkdir -p /home/${{ secrets.ALIYUN_USERNAME }}/nest-app
+            rm -rf /${{ secrets.ALIYUN_USERNAME }}/nest-app/dist
+            mkdir -p /${{ secrets.ALIYUN_USERNAME }}/nest-app
 
       # 将构建产物传输到服务器
       - name: Copy build artifacts
@@ -46,7 +45,7 @@ jobs:
           username: ${{ secrets.ALIYUN_USERNAME }}
           key: ${{ secrets.ALIYUN_SSH }}
           source: 'dist/,docker-compose.yml,.env,package.json,yarn.lock'
-          target: '/home/${{ secrets.ALIYUN_USERNAME }}/nest-app'
+          target: '/${{ secrets.ALIYUN_USERNAME }}/nest-app'
 
       # 重启数据库服务
       - name: Restart Database Services
@@ -56,7 +55,7 @@ jobs:
           username: ${{ secrets.ALIYUN_USERNAME }}
           key: ${{ secrets.ALIYUN_SSH }}
           script: |
-            cd /home/${{ secrets.ALIYUN_USERNAME }}/nest-app
+            cd /${{ secrets.ALIYUN_USERNAME }}/nest-app
             docker compose down || true
             docker rm -f my_mysql my_adminer || true
             docker compose up -d
