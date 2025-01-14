@@ -48,17 +48,6 @@ jobs:
           source: 'dist/,docker-compose.yml,.env,package.json,yarn.lock'
           target: '/home/${{ secrets.ALIYUN_USERNAME }}/nest-app'
 
-      # 安装依赖
-      - name: Install Dependencies
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.ALIYUN_HOST }}
-          username: ${{ secrets.ALIYUN_USERNAME }}
-          key: ${{ secrets.ALIYUN_SSH }}
-          script: |
-            cd /home/${{ secrets.ALIYUN_USERNAME }}/nest-app
-            yarn install
-
       # 重启数据库服务
       - name: Restart Database Services
         uses: appleboy/ssh-action@master
@@ -71,4 +60,3 @@ jobs:
             docker compose down || true
             docker rm -f my_mysql my_adminer || true
             docker compose up -d
-            yarn start:prod
