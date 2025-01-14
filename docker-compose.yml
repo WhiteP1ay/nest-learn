@@ -1,24 +1,4 @@
 services:
-  # NestJS 应用服务
-  api:
-    image: node:20-alpine
-    container_name: nest_api
-    working_dir: /app
-    volumes:
-      - .:/app
-    command: >
-      sh -c "yarn install &&
-             yarn build &&
-             yarn start:prod"
-    ports:
-      - "3000:3000"
-    env_file:
-      - .dev.env
-    depends_on:
-      - mysql
-    networks:
-      - backend
-
   # MySQL 服务配置
   mysql:
     image: mysql:8.0
